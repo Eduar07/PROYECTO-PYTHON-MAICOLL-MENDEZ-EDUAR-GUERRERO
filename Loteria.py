@@ -1,8 +1,10 @@
-import os
-import random
-import json
-from collections import Counter
+#IMPORTACION DE LIBRERIAS
+import os   # Librería para operaciones del sistema operativo (limpiar pantalla)
+import random  # Librería para generar números aleatorios
+import json # Librería para manejar archivos JSON
+from collections import Counter # Importa Counter para contar elementos en listas
 
+#FUNCIONES PARA MANEJO DE ARCHIVOS JSON
 def leerJson(path: str):
     try:
         with open(path, mode='r') as file:
@@ -24,6 +26,7 @@ Admin = "ADMINISTRADOR"
 Boleta_Ganadora = "5-12-23-34-41-48"
 historial_ganadores = []
 
+#MENU PRINCIPAL
 menu = """
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │     /$$       /$$                                                    /$$       /$$              │
@@ -53,6 +56,7 @@ menu = """
 └─────────────────────────────────────────────────────────────────────────────────────────────────┘
 """
 
+#FUNCIONES DE UTILIDAD
 def clear_screen():
     if os.name == 'nt':
         os.system('cls')  # Windows
@@ -64,12 +68,13 @@ def rango_clear_screen(variable: int, valorminimo: int, valormaximo: int):
     if valorminimo <= variable <= valormaximo:
         clear_screen()
 
+#FUNCION  PARA IMPRIMIT UNA LINEA EN BLANCO
 def espacio():
     print("\n" * 1)
 # AGREGAMOS EL LOGO DE LA EMPRESA PARA QUE APARECA CADA VEZ QUE SE DE UNA OPCION
 def logos():
     print(menu)
-# INTERFAZ GRAFICA DEL LAPAGINA 
+# INTERFAZ GRAFICA DEL LAPAGINA (FUNCIONES DE MENU)
 def Menu_De_Ingreso():
     logos()
     print("---------------------------------------------------------------------------------------------------")
@@ -79,6 +84,7 @@ def Menu_De_Ingreso():
     print("----------------------------------0.         SALIR ❌           --------------------------------------")
     espacio()
 
+#FUNCIONES DE VALIDACION
 def Validacion_Ingreso(mensaje: str, valorminimo: int = 0, valormaximo: int = 6): #VALIDAR QUE SOLO INGRESE LETRAS
     while True:
         try:
@@ -148,7 +154,9 @@ def Validacion_Correo(mensaje: str): # VALIDA QUE EL CORREO SEA ESCRITO EN MINIS
             continue
         print("CORREO INGRESADO CORRECTAMENTE")
         return email
-
+    
+#FUNCIONES DE REGISTRO Y MANEJO DE USUARIOS
+# Función para crear estructura de usuario
 def Registro_Usuarios(Cedula: int, Nombre: str, Telefono: int, Correo: str, Usuario: str, Password: str): # CREAMOS  UN USUARIO Y LE AGREGAMOS  QUE VA TENER ESE USUARIO
     return {
         "Cedula": Cedula,
@@ -165,6 +173,8 @@ def Registro_Usuarios(Cedula: int, Nombre: str, Telefono: int, Correo: str, Usua
         "premios": {"bronce": 0, "plata": 0, "oro": 0, "gran_premio": 0}
     }
 
+
+ # Función para registrar nuevos usuarios
 def Guardar_Usuarios(datos: dict, guardar: list): # AQUI ES CUANDO EL USUARIO SE VA A REGISTRAR
     Nombre = Validar_Texto("INGRESE SU NOMBRE: \n")
     Cedula = Validacion_Ingreso(f"INGRESE SU CEDULA, {Nombre} :\n", 10000000, 100000000000)
@@ -200,7 +210,9 @@ def Validacion_Telefono(mensaje: str): # VALIDA QUE EL NUMERO TENGA 10 NUMERO Y 
                 print("RECUERDA QUE SU NUMERO NO DEBE TENE LETRAS ")
         except:
             print("INGRESE SOLO NUMEROS")
+
 # INTERFAZ DE CADA OPCION O SI ES USUARIO O ADMINISTRADOR
+# FUNCIONES DE MENUS ESPECIFICOS
 def Menu_Usuario():
     logos()
     print("------------------------------------------------😄-------------------------------------------------")
@@ -238,6 +250,7 @@ def Menu_Sub_Menu_Aciertos():
     print("----------------------------5. ESTADISTICAS 📊                   ---------------------------------")
     print("----------------------------0. SALIR  ❌                         ---------------------------------")
 
+#FUNCIONES DE COMPRA DE BOLETOS
 def Agregar_Boletos_Usuario(usuario_nombre: str, datos: str): # AGREGA LOS BOLETOS ALEATORIAMENTE Y QUE EL ESCOJA CUALES QUIERE
     usuarios = leerJson(datos)
     lista_Numeros = []
@@ -287,7 +300,7 @@ def Agregar_Boletos_Usuario(usuario_nombre: str, datos: str): # AGREGA LOS BOLET
     
     escribirJson(datos, usuarios)
     
-    # MOSTRAR LOS ACIEERTOS DEL ULTIMO SORTEO
+    # MOSTRAR ACIERTOS VS ULTIMO ACIERTO
     mostrar_aciertos_ultimo_sorteo(seleccionados, datos)
     
     # MOSTRAR NUEMRO MAS FRECUENTES
@@ -295,7 +308,8 @@ def Agregar_Boletos_Usuario(usuario_nombre: str, datos: str): # AGREGA LOS BOLET
     
     print(f"\n¡BOLETOS COMPRADOS EXITOSAMENTE {usuario_nombre}!")
     print(f"COSTO TOTAL: ${costo:,}")
-
+    
+    #FUNCIONES DEL ADMINISTRADOR
 def Administrador_Menu():
     logos()
     print("------------------------------------------------😄-------------------------------------------------")
@@ -307,11 +321,12 @@ def Administrador_Menu():
     print("----------------------------4. VER HISTORIAL DE LOS GANADORES   📜     ----------------------------")
     print("----------------------------0. SALIR  ❌                               ----------------------------")   
 
+# Función para mostrar todos los usuarios registrados
 def Administrador_Ver_Usuarios(datos: str, admin: str): # CAUNDO EL USUARIO QUIERA VER LOS USUARIOS
     Ver_Usuario = leerJson(datos)
     for i in Ver_Usuario:
         print(f"CEDULA: {i['Cedula']} , USUARIO: {i['Usuario']} , TELEFONO: {i['Telefono']} , CORREO: {i['Correo']}")
-
+# Función para que el administrador ingrese número ganador
 def Boletas_Ganadoras_Ad(nombre_Admin: str, datos: str): # EN ADMINISTRADOR AGREGA LA BOLETA GANADORA 
     global Boleta_Ganadora, historial_ganadores
     
@@ -349,7 +364,7 @@ def Boletas_Ganadoras_Ad(nombre_Admin: str, datos: str): # EN ADMINISTRADOR AGRE
             return boleto
         else:
             print("ENTRADA INVÁLIDA. ASEGÚRESE DE QUE TODOS LOS NÚMEROS ESTÉN ENTRE 1 Y 49.")
-
+ # Función para verificar ganadores y otorgar premios
 def verificar_ganadores_y_premios(datos: str, boleto_ganador: str): #VERIFICA GANADORES POR ACIERTOS
     usuarios = leerJson(datos)
     numeros_ganadores = [int(x) for x in boleto_ganador.split("-")]
@@ -360,7 +375,7 @@ def verificar_ganadores_y_premios(datos: str, boleto_ganador: str): #VERIFICA GA
                 numeros_boleto = [int(x) for x in boleto.split("-")]
                 aciertos = len(set(numeros_boleto) & set(numeros_ganadores))
                 
-                # ASIGNA LOS PREMIOS POR ACIERTOS
+                # ASIGNA LOS PREMIOS SEGUN ACIERTOS
                 if aciertos == 6:
                     usuario["premios"]["gran_premio"] += 1
                     usuario["dinero_ganado"] += 100000000  # $100,000,000
@@ -380,12 +395,14 @@ def verificar_ganadores_y_premios(datos: str, boleto_ganador: str): #VERIFICA GA
     
     escribirJson(datos, usuarios)
 
+# Función para mostrar historial de números ganadores (admin)
 def Numero_Ganadores(datos: str, admin: str): # MUESTRA LOS NUMEROS GANADORES .................
     global historial_ganadores
     print("HISTORIAL DE NÚMEROS GANADORES:")
     for i, ganador in enumerate(historial_ganadores, start=1):
         print(f"{i}: {ganador}")
 
+ # Función para buscar ganadores de un boleto específico
 def Ganadores(datos: str, variable: str):
     usuarios = leerJson(datos)
     encontrado = False
@@ -395,7 +412,7 @@ def Ganadores(datos: str, variable: str):
             encontrado = True
     if not encontrado:
         print("No hay ganadores para ese boleto.")        
-
+ # Función para normalizar formato de boletos
 def Normalizar_Boletos(datos: str):
     usuarios = leerJson(datos)
     for usuario in usuarios:
@@ -410,6 +427,7 @@ def Normalizar_Boletos(datos: str):
             usuario["boletos"] = nuevos_boletos
     escribirJson(datos, usuarios)
 
+# Función para verificar que las contraseñas coincidan
 def Verificacion_Contraseña(mensaje: str):
     while True:
         contraseña = input(mensaje)
@@ -420,6 +438,7 @@ def Verificacion_Contraseña(mensaje: str):
         else:
             print("VERIFICA QUE LAS CONTRAEÑAS SEAN IGUALES")
 
+ # Función para iniciar sesión de usuario
 def Ingreso_Usuario(mensaje: str):
     global Nombre_Usuario
     while True:
@@ -447,6 +466,8 @@ def Ingreso_Usuario(mensaje: str):
             print("USUARIO NO EXISTE")
             break
 
+
+# Función para comprar boletos ingresando números manualmente
 def Agregar_Boletos_Manualmente(usuario_nombre: str, datos: str):
     usuarios = leerJson(datos)
     lista_Numeros = []
@@ -497,6 +518,7 @@ def Agregar_Boletos_Manualmente(usuario_nombre: str, datos: str):
     print(f"\n¡Boletos comprados exitosamente para {usuario_nombre}!")
     print(f"COSTO TOTAL: ${costo:,}")
 
+ # Función para mostrar boletos comprados por usuario
 def Boletos_Comprados(nombre_Usuario: str, datos: str):
     usuarios = leerJson(datos)
     boletos_encontrados = False
@@ -513,12 +535,14 @@ def Boletos_Comprados(nombre_Usuario: str, datos: str):
     if not boletos_encontrados:
         print("NO TIENE BOLETOS COMPRADOS")
 
+# Función para mostrar números ganadores al usuario
 def Numeros_Ganadores_Usuario(datos: str, nombre_usuario: str):
     global historial_ganadores
     print(f"HISTORIAL DE NÚMEROS GANADORES PARA {nombre_usuario}:")
     for i, ganador in enumerate(historial_ganadores, start=1):
         print(f"{i}: {ganador}")
 
+ # Función para mostrar historial personal de números jugados
 def Personal_numerosjugadores(datos: str, nombre_usuario: str):
     usuarios = leerJson(datos)
     
@@ -532,6 +556,7 @@ def Personal_numerosjugadores(datos: str, nombre_usuario: str):
                 print("NO HAY HISTORIAL DE BOLETOS JUGADOS")
             break
 
+ # Función para mostrar premios ganados por usuario
 def premios_personales(datos: str, nombre_usuario: str):
     usuarios = leerJson(datos)
     
@@ -545,6 +570,7 @@ def premios_personales(datos: str, nombre_usuario: str):
             print(f"🏆 GRAN PREMIO (6 aciertos): {premios['gran_premio']} veces")
             break
 
+ # Función para mostrar dinero invertido por usuario
 def ver_dinero_invertido(datos: str, nombre_usuario: str):
     usuarios = leerJson(datos)
     
@@ -554,6 +580,7 @@ def ver_dinero_invertido(datos: str, nombre_usuario: str):
             print(f"DINERO INVERTIDO POR {nombre_usuario}: ${dinero:,}")
             break
 
+ # Función para mostrar dinero ganado por usuario
 def ver_dinero_ganado(datos: str, nombre_usuario: str):
     usuarios = leerJson(datos)
     
@@ -563,6 +590,8 @@ def ver_dinero_ganado(datos: str, nombre_usuario: str):
             print(f"DINERO GANADO POR {nombre_usuario}: ${dinero:,}")
             break
 
+
+ # Función para mostrar aciertos contra último sorteo
 def mostrar_aciertos_ultimo_sorteo(boletos: list, datos: str):
     global Boleta_Ganadora
     
@@ -575,6 +604,8 @@ def mostrar_aciertos_ultimo_sorteo(boletos: list, datos: str):
             aciertos = len(set(numeros_boleto) & set(numeros_ganadores))
             print(f"Boleto {i} ({boleto}): {aciertos} aciertos")
 
+
+ # Función para mostrar número más frecuente en sorteos
 def mostrar_numero_mas_frecuente(datos: str):
     global historial_ganadores
     
@@ -595,19 +626,23 @@ def mostrar_numero_mas_frecuente(datos: str):
     else:
         print("\nNO HAY HISTORIAL DE SORTEOS DISPONIBLE")
 
+ # Función para convertir string de boleto a lista de enteros
 def convertido(nombre: str):
     numero = [int(x) for x in nombre.split("-")]
     return numero
 
+# Función para convertir lista de strings de boletos a listas de enteros
 def convertido_lista(nombre: list):
     numeros = [[int(x) for x in s.split("-")] for s in nombre]
     return numeros
 
+ # Función para comparar boletos con número ganador
 def comparacion(dato: list, datos2: list):
     for i, boleto in enumerate(dato, start=1):
         aciertos = len(set(boleto) & set(datos2))
         print(f"Boleto {i}: {boleto} - Aciertos: {aciertos}")
 
+ # Función para mostrar historial con aciertos detallados
 def mostrar_historial_con_aciertos(datos: str, nombre_usuario: str):
     global Boleta_Ganadora
     usuarios = leerJson(datos)
@@ -637,6 +672,7 @@ def mostrar_historial_con_aciertos(datos: str, nombre_usuario: str):
                 print("NO HAY HISTORIAL DE BOLETOS")
             break
 
+ # Función principal del menú de usuario
 def Proceso_Inicial():
     while True:
         Menu_Usuario()
@@ -709,6 +745,7 @@ def Proceso_Inicial():
         elif Opcion_Usuario == 0:  # SALIR
             break
 
+# Función para mostrar premios específicos
 def mostrar_premios_especificos(datos: str, nombre_usuario: str, tipo_premio: str):
     usuarios = leerJson(datos)
     
@@ -737,6 +774,7 @@ def mostrar_premios_especificos(datos: str, nombre_usuario: str, tipo_premio: st
                 print(f"Total ganado en este premio: ${total_ganado:,}")
             break
 
+ # Función principal del menú de administrador
 def Proceso_Administrador():
     while True:
         Administrador_Menu()
@@ -766,6 +804,7 @@ def Proceso_Administrador():
         elif opcion_admin == 0:  # SALIR
             break
 
+ # Función para mostrar todos los ganadores del sistema
 def mostrar_todos_los_ganadores(datos: str):
     usuarios = leerJson(datos)
     print("HISTORIAL DE TODOS LOS GANADORES:")
@@ -789,7 +828,7 @@ def mostrar_todos_los_ganadores(datos: str):
         print("NO HAY GANADORES REGISTRADOS")
 
 # PROGRAMA PRINCIPAL
-def main():
+def main(): # Función principal del programa
     global Nombre_Usuario
     
     while True:
